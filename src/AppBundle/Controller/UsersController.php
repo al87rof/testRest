@@ -9,6 +9,7 @@
 namespace AppBundle\Controller;
 
 
+use AppBundle\Entity\User;
 use FOS\RestBundle\Controller\FOSRestController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
@@ -48,10 +49,10 @@ class UsersController extends FOSRestController
         return $response;
     } // "get_users"            [GET] /users
 
-    public function getUserAction($slug)
+    public function getUserAction($id)
     {
         $repo = $this->getDoctrine()->getRepository('AppBundle:User');
-        $users = $repo->find($slug);
+        $users = $repo->find($id);
         $jsonContent = $this->serializer->serialize($users, 'json');
         $response = new Response();
         $response->setContent($jsonContent);
@@ -60,9 +61,21 @@ class UsersController extends FOSRestController
     } // "get_user"             [GET] /users/{slug}
 
 
-    public function postUsersAction()
+    public function newUserAction(User $user)
     {
-        
-    } // "post_users"           [POST] /users
+        $repo = $this->getDoctrine()->getRepository('User');
+        $userInfo = $repo->findBy(['email'=>$user->getEmail()]);
+        if($userInfo[0] instanceof User){
+            return new Response('User already exist');
+        }
+        if($user instanceof User){
+            $em = $this->get('doctrine.orm.entity_manager');
+            $em->persist($user);
+            $em->flush($user);
+            return new Response('User add success');
+        }
+
+
+    } // "post_user"           [POST] /user
 
 }

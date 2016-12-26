@@ -1,3 +1,18 @@
 get_all_users:
-     path: \users
-     def
+     path: /users
+     defaults: {_controller: AppBundle:Users:getUsers}
+     requirements:
+          _method: GET
+
+get_user_by_id:
+     path: /user/{id}
+     defaults: {_controller: AppBundle:Users:getUser}
+     requirements:
+          _method: GET
+          id: \d+
+
+new_user:
+     path: /user
+     defaults: {_controller: AppBundle:Users:newUser}
+     requirements:
+          _method: POST
